@@ -125,8 +125,11 @@ namespace TwoAnd20.Forms
             {
                 var oneClick = clickList.First();
                 var firstClick = oneClick.buttonsFor;
-                if (oneClick.button == button)
+                if (oneClick.button == button || firstClick == null)
+                {
+                    clickList.Remove(oneClick);
                     return;
+                }
                 var checkClickAccess = firstClick.FirstOrDefault(p => p == button);
                 var index = Array.IndexOf(firstClick, checkClickAccess);
 
@@ -141,6 +144,10 @@ namespace TwoAnd20.Forms
                     button.BackgroundImageLayout = ImageLayout.Stretch;
 
                     oneClick.button.BackgroundImage = null;
+                    clickList.Remove(oneClick);
+                }
+                else if (checkClickAccess == null)
+                {
                     clickList.Remove(oneClick);
                 }
             }
@@ -223,7 +230,6 @@ namespace TwoAnd20.Forms
         private void button8_Click(object sender, EventArgs e)
         {
             Click(sender as Button);
-
         }
 
         private void button18_Click(object sender, EventArgs e)
