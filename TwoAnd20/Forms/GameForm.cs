@@ -22,7 +22,7 @@ namespace TwoAnd20.Forms
             InitializeComponent();
             label2.Text = ChickenCount.ToString();
         }
-
+        //todo Сделать метод для рестарта!
         public ClickHash ClickDataBase(Button button, Image buttonBgImage, Button[] buttonFor)
         {
             // Format24bppRgb - курица
@@ -62,10 +62,10 @@ namespace TwoAnd20.Forms
                 var indexesEnableTrue = new List<Button>();
                 foreach (var index in checkedButtons)
                 {
-                    if (buttonFor != null)
+                    if (buttonFor[index] != null)
                     {
                         buttonFor[index].Enabled = false;
-                        if (buttonFor[index + 1].BackgroundImage == null)
+                        if (buttonFor[index + 1]?.BackgroundImage == null && buttonFor[index+1] != null)
                         {
                             buttonFor[index + 1].Enabled = true;
                             indexesEnableTrue.Add(buttonFor[index + 1]);
@@ -227,9 +227,24 @@ namespace TwoAnd20.Forms
                     LastStepButton = button;
                     oneClick.button.BackgroundImage = null;
                     EnableAndDisable(LastStepButton);
-                    //todo Сделать метод для проверки, выиграли курицы или нет?
-
                     ClickList.Remove(oneClick);
+                    if(button1.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb &&
+                        button2.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb &&
+                        button3.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb &&
+                        button4.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb &&
+                        button5.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb &&
+                        button6.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb &&
+                        button10.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb &&
+                        button11.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb &&
+                        button24.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb)
+                    {
+                        MessageBox.Show("Курицы выиграли!", "Chickens Win", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else if(ChickenCount < 9)
+                    {
+                        MessageBox.Show("Лисы выиграли!", "Foxes Win", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
                 }
             }
             else
@@ -238,6 +253,8 @@ namespace TwoAnd20.Forms
                     ClickDataBase(button, button.BackgroundImage, neighbors);
             }
         }
+
+
 
         /// <summary>
         /// Метод поедания
@@ -250,6 +267,7 @@ namespace TwoAnd20.Forms
         {
             buttons[index - 1].BackgroundImage = null;
             label2.Text = (ChickenCount - 1).ToString();
+            ChickenCount--;
         }
 
         /// <summary>
