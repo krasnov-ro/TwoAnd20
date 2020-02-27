@@ -47,13 +47,13 @@ namespace TwoAnd20.Forms
 
             Button[] buttonsFor16 = { null, null, null, null, button7, button10, button17, button19 };
             Button[] buttonsFor7 = { button16, null, null, null, button10, button11, button31, button20 };
-            Button[] buttonsFor10 = { button7, button16, button4, button1, button11, button14, button9, button21 };
+            Button[] buttonsFor10 = { button7, button16, button4, button1, button11, button24, button9, button21 };
             Button[] buttonsFor11 = { button10, button7, button5, button2, button24, button8, button13, button22 };
             Button[] buttonsFor24 = { button11, button10, button6, button3, button8, button18, button12, button23 };
             Button[] buttonsFor8 = { button24, button11, null, null, button18, null, button14, button25 };
             Button[] buttonsFor18 = { button8, button24, null, null, null, null, button15, button26 };
 
-            Button[] buttonsFor17 = { null,null, button16, null, button31, button9, button19, null };
+            Button[] buttonsFor17 = { null, null, button16, null, button31, button9, button19, null };
             Button[] buttonsFor31 = { button17, null, button7, null, button9, button13, button20, null };
             Button[] buttonsFor9 = { button31, button17, button10, button4, button13, button12, button21, button27 };
             Button[] buttonsFor13 = { button9, button31, button11, button5, button12, button14, button22, button28 };
@@ -125,29 +125,35 @@ namespace TwoAnd20.Forms
             {
                 var oneClick = clickList.First();
                 var firstClick = oneClick.buttonsFor;
-                if (oneClick.button == button || firstClick == null)
+                var checkClickAccess = firstClick?.FirstOrDefault(p => p == button);
+
+                if (oneClick.button == button || firstClick == null || checkClickAccess == null)
                 {
                     clickList.Remove(oneClick);
                     return;
                 }
-                var checkClickAccess = firstClick.FirstOrDefault(p => p == button);
+
                 var index = Array.IndexOf(firstClick, checkClickAccess);
 
-                if(index == 1 || index == 3 || index == 5 || index == 7)
+                if (index == 1 || index == 3 || index == 5 || index == 7)
                 {
-                    Eating(button, index, firstClick, oneClick);
+                    if (oneClick.buttonBgImage != TwoAnd20.Properties.Resources.chicken && button.BackgroundImage == null)
+                    {
+                        Eating(button, index, firstClick, oneClick);
+                    }
+                    else
+                    {
+                        clickList.Remove(oneClick);
+                        return;
+                    }
                 }
 
-                if (checkClickAccess != null && checkBackgroundImage == null)
+                if (checkBackgroundImage == null)
                 {
                     button.BackgroundImage = oneClick.buttonBgImage;
                     button.BackgroundImageLayout = ImageLayout.Stretch;
 
                     oneClick.button.BackgroundImage = null;
-                    clickList.Remove(oneClick);
-                }
-                else if (checkClickAccess == null)
-                {
                     clickList.Remove(oneClick);
                 }
             }
@@ -162,10 +168,7 @@ namespace TwoAnd20.Forms
 
         public void Eating(Button button, int index, Button[] buttons, ClickHash clickList)
         {
-            if(clickList.buttonBgImage != TwoAnd20.Properties.Resources.chicken)
-            {
-
-            }
+            buttons[index - 1].BackgroundImage = null;
         }
 
         private void button1_Click(object sender, EventArgs e)
