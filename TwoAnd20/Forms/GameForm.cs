@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,24 +13,93 @@ namespace TwoAnd20.Forms
 {
     public partial class GameForm : Form
     {
+        List<ClickHash> ClickList = new List<ClickHash>();
+        Button LastStepButton = null;
+        int ChickenCount = 20;
+
         public GameForm()
         {
             InitializeComponent();
+            label2.Text = ChickenCount.ToString();
         }
-
-        List<ClickHash> clickList = new List<ClickHash>();
 
         public ClickHash ClickDataBase(Button button, Image buttonBgImage, Button[] buttonFor)
         {
+            // Format24bppRgb - курица
+            // Format32bppArgb - лиса
+            var checkedButtons = new List<int>();
+
+            foreach (var control in this.Controls)
+            {
+                if ((control is Button) && !buttonFor.Any(p => p == control))
+                {
+                    (control as Button).Enabled = false;
+                }
+            }
+
+            #region Обязательства, кушать, для лис
+            for (int i = 0; i < buttonFor.Count(); i++)
+            {
+                if (buttonFor[i] != null)
+                {
+                    if (buttonFor[i]?.BackgroundImage?.PixelFormat == PixelFormat.Format24bppRgb
+                        && (i == 0 || i == 2 || i == 4 || i == 6))
+                    {
+                        checkedButtons.Add(i);
+                    }
+                    else if (i == 0 || i == 2 || i == 4 || i == 6)
+                    {
+                        buttonFor[i].Enabled = true;
+                    }
+                    else
+                    {
+                        buttonFor[i].Enabled = false;
+                    }
+                }
+            }
+            if (buttonBgImage.PixelFormat == PixelFormat.Format32bppArgb)
+            {
+                var indexesEnableTrue = new List<Button>();
+                foreach (var index in checkedButtons)
+                {
+                    if (buttonFor != null)
+                    {
+                        buttonFor[index].Enabled = false;
+                        if (buttonFor[index + 1].BackgroundImage == null)
+                        {
+                            buttonFor[index + 1].Enabled = true;
+                            indexesEnableTrue.Add(buttonFor[index + 1]);
+                        }
+                    }
+                }
+                if(indexesEnableTrue.Count() > 0)
+                {
+                    foreach (var control in this.Controls)
+                    {
+                        if ((control is Button) && !indexesEnableTrue.Any(p => p == control))
+                        {
+                            (control as Button).Enabled = false;
+                        }
+                    }
+                }
+            }
+            #endregion 
+
             var newClick = new ClickHash
             {
                 buttonBgImage = buttonBgImage,
                 button = button,
                 buttonsFor = buttonFor
             };
-            clickList.Add(newClick);
+            ClickList.Add(newClick);
             return newClick;
         }
+
+        /// <summary>
+        /// Метод для получения доступных клеток для совершения хода
+        /// </summary>
+        /// <param name="button"></param>
+        /// <returns></returns>
         public Button[] NeighborsButton(Button button)
         {
             int who;
@@ -121,15 +191,15 @@ namespace TwoAnd20.Forms
             var neighbors = NeighborsButton(button);
             var checkBackgroundImage = button.BackgroundImage;
 
-            if (clickList.Count != 0)
+            if (ClickList.Count != 0)
             {
-                var oneClick = clickList.First();
-                var firstClick = oneClick.buttonsFor;
-                var checkClickAccess = firstClick?.FirstOrDefault(p => p == button);
+                var oneClick = ClickList.First(); // Информация о предыдущем нажатии на кнопку 
+                var firstClick = oneClick.buttonsFor; // Массив доступных клеток для хода с предыдущей клетки
+                var checkClickAccess = firstClick?.FirstOrDefault(p => p == button); // Проверяем есть ли доступ к текущей клетке с предыдущей клетки
 
                 if (oneClick.button == button || firstClick == null || checkClickAccess == null)
                 {
-                    clickList.Remove(oneClick);
+                    ClickList.Remove(oneClick);
                     return;
                 }
 
@@ -137,13 +207,15 @@ namespace TwoAnd20.Forms
 
                 if (index == 1 || index == 3 || index == 5 || index == 7)
                 {
-                    if (oneClick.buttonBgImage != TwoAnd20.Properties.Resources.chicken && button.BackgroundImage == null)
+                    if (oneClick.buttonBgImage.PixelFormat != PixelFormat.Format24bppRgb &&
+                                    button.BackgroundImage == null &&
+                                    firstClick[index - 1].BackgroundImage != null)
                     {
                         Eating(button, index, firstClick, oneClick);
                     }
                     else
                     {
-                        clickList.Remove(oneClick);
+                        ClickList.Remove(oneClick);
                         return;
                     }
                 }
@@ -152,23 +224,63 @@ namespace TwoAnd20.Forms
                 {
                     button.BackgroundImage = oneClick.buttonBgImage;
                     button.BackgroundImageLayout = ImageLayout.Stretch;
-
+                    LastStepButton = button;
                     oneClick.button.BackgroundImage = null;
-                    clickList.Remove(oneClick);
+                    EnableAndDisable(LastStepButton);
+                    //todo Сделать метод для проверки, выиграли курицы или нет?
+
+                    ClickList.Remove(oneClick);
                 }
             }
             else
             {
                 if (button.BackgroundImage != null)
                     ClickDataBase(button, button.BackgroundImage, neighbors);
-                else
-                    ClickDataBase(button, null, null);
             }
         }
 
+        /// <summary>
+        /// Метод поедания
+        /// </summary>
+        /// <param name="button"></param>
+        /// <param name="index"></param>
+        /// <param name="buttons"></param>
+        /// <param name="clickList"></param>
         public void Eating(Button button, int index, Button[] buttons, ClickHash clickList)
         {
             buttons[index - 1].BackgroundImage = null;
+            label2.Text = (ChickenCount - 1).ToString();
+        }
+
+        /// <summary>
+        /// Метод для соблюдения очереди ходов
+        /// </summary>
+        /// <param name="lastStepButton"></param>
+        public void EnableAndDisable(Button lastStepButton)
+        {
+            var type = lastStepButton.BackgroundImage?.PixelFormat;
+
+            List<Button> buttons = new List<Button>();
+            foreach (var button in this.Controls)
+            {
+                if (button is Button)
+                {
+                    buttons.Add(button as Button);
+                }
+            }
+            foreach (var button in buttons)
+            {
+                if (button.BackgroundImage?.PixelFormat == type && type != null)
+                {
+                    button.Enabled = false;
+                }
+                else
+                {
+                    button.Enabled = true;
+                }
+            }
+
+            /*todo Сделать бота который бы смотрел на тип существа, который совершил этот ход, и в зависимости от того за кого он играет, делал бы ход*/ 
         }
 
         private void button1_Click(object sender, EventArgs e)
