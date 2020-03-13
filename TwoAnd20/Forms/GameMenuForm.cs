@@ -24,5 +24,6 @@ namespace TwoAnd20
             ActiveForm.Hide();
             fm.ShowDialog();
         }
+        //todo Надо реализовать кнопку настроек
     }
 }

@@ -61,6 +61,9 @@
             this.button30 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.closeButton = new System.Windows.Forms.Button();
+            this.restartButton = new System.Windows.Forms.Button();
+            this.goMenuButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -399,11 +402,48 @@
             this.label2.Size = new System.Drawing.Size(0, 13);
             this.label2.TabIndex = 2;
             // 
+            // closeButton
+            // 
+            this.closeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.closeButton.Location = new System.Drawing.Point(637, 389);
+            this.closeButton.Name = "closeButton";
+            this.closeButton.Size = new System.Drawing.Size(151, 49);
+            this.closeButton.TabIndex = 3;
+            this.closeButton.Text = "Close";
+            this.closeButton.UseVisualStyleBackColor = true;
+            this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
+            // 
+            // restartButton
+            // 
+            this.restartButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.restartButton.Location = new System.Drawing.Point(12, 390);
+            this.restartButton.Name = "restartButton";
+            this.restartButton.Size = new System.Drawing.Size(151, 49);
+            this.restartButton.TabIndex = 3;
+            this.restartButton.Text = "Restart";
+            this.restartButton.UseVisualStyleBackColor = true;
+            this.restartButton.Click += new System.EventHandler(this.restartButton_Click);
+            // 
+            // goMenuButton
+            // 
+            this.goMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.goMenuButton.Location = new System.Drawing.Point(637, 13);
+            this.goMenuButton.Name = "goMenuButton";
+            this.goMenuButton.Size = new System.Drawing.Size(151, 49);
+            this.goMenuButton.TabIndex = 3;
+            this.goMenuButton.Text = "Menu";
+            this.goMenuButton.UseVisualStyleBackColor = true;
+            this.goMenuButton.Click += new System.EventHandler(this.goMenuButton_Click);
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.restartButton);
+            this.Controls.Add(this.goMenuButton);
+            this.Controls.Add(this.closeButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button3);
@@ -437,6 +477,7 @@
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "GameForm";
             this.Text = "GameForm";
             this.Load += new System.EventHandler(this.GameForm_Load);
@@ -480,5 +521,8 @@
         private System.Windows.Forms.Button button30;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button closeButton;
+        private System.Windows.Forms.Button restartButton;
+        private System.Windows.Forms.Button goMenuButton;
     }
 }
